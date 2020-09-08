@@ -29,7 +29,9 @@ private:
     void createGameBackground(cocos2d::Size size);
     CardSprite *cardArray[4][4];
     
-    bool checkIsGameOver();
+    // 0-left 1-right 2-down 3-top
+    bool checkIsGameOver(int direction);
+    
     void createRandomCardNumber();
     
     int beginX, beginY, endX, endY;

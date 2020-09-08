@@ -90,22 +90,33 @@ void GameScene::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *event) {
     if (abs(changeX) < 10 && abs(changeY) < 10) {
         return;
     }
-    
-    if (checkIsGameOver()) {
-        Director::getInstance()->replaceScene(TransitionFade::create(1, GameScene::createScene()));
-        return;
-    }
-    
+        
     if (abs(changeX) > abs(changeY)) {
         if (changeX + 5 > 0) {
+            if (checkIsGameOver(0)) {
+                Director::getInstance()->replaceScene(TransitionFade::create(1, GameScene::createScene()));
+                return;
+            }
             goLeft();
         } else {
+            if (checkIsGameOver(1)) {
+                Director::getInstance()->replaceScene(TransitionFade::create(1, GameScene::createScene()));
+                return;
+            }
             goRight();
         }
     } else {
         if (changeY + 5 > 0) {
+            if (checkIsGameOver(2)) {
+                Director::getInstance()->replaceScene(TransitionFade::create(1, GameScene::createScene()));
+                return;
+            }
             goDown();
         } else {
+            if (checkIsGameOver(3)) {
+                Director::getInstance()->replaceScene(TransitionFade::create(1, GameScene::createScene()));
+                return;
+            }
             goUp();
         }
     }
@@ -201,7 +212,9 @@ void GameScene::goDown() {
     }
 }
 
-bool GameScene::checkIsGameOver() {
+// 0-left 1-right 2-down 3-top
+bool GameScene::checkIsGameOver(int direction) {
+    // 检查还是否有位置
     for (int i = 0; i < 4; i ++) {
         for (int j = 0; j < 4; j ++) {
             if (cardArray[i][j]->getNumber() == 0) {
@@ -209,6 +222,41 @@ bool GameScene::checkIsGameOver() {
             }
         }
     }
+    // 检查相同数字
+    if (direction == 0) {
+        for (int i = 0; i < 4; i ++) {
+            for (int j = 3; j > 0; j --) {
+                if (cardArray[j][i]->getNumber() == cardArray[j-1][i]->getNumber()) {
+                    return false;
+                }
+            }
+        }
+    } else if (direction == 1) {
+        for (int i = 0; i < 4; i ++) {
+            for (int j = 0; j < 3; j ++) {
+                if (cardArray[j][i]->getNumber() == cardArray[j+1][i]->getNumber()) {
+                    return false;
+                }
+            }
+        }
+    } else if (direction == 2) {
+        for (int i = 0; i < 4; i ++) {
+            for (int j = 3; j > 0; j --) {
+                if (cardArray[j][i]->getNumber() == cardArray[j-1][i]->getNumber()) {
+                    return false;
+                }
+            }
+        }
+    } else if (direction == 3) {
+        for (int i = 0; i < 4; i ++) {
+            for (int j = 0; j < 3; j ++) {
+                if (cardArray[i][j]->getNumber() == cardArray[i][j+1]->getNumber()) {
+                    return false;
+                }
+            }
+        }
+    }
+
     return true;
 }
 
@@ -230,6 +278,6 @@ void GameScene::createRandomCardNumber() {
     if (cardArray[i][j]->getNumber() > 0) {
         this->createRandomCardNumber();
     } else {
-        cardArray[i][j]->setNumber(CCRANDOM_0_1() *10 < 1? 4 : 2);
+        cardArray[i][j]->setNumber(CCRANDOM_0_1() *10 < 3? 4 : 2);
     }
 }
